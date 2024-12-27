@@ -21,29 +21,35 @@ def get_battle_log(player_tag):
         print(f"Error fetching battle log for {player_tag}: {response.status_code} {response.text}")
         return []
 
-def extract_matches(battle_logs):
+def extract_matches(limit):
     print("extracting matches")
     matches = []
-    for battle in battle_logs:
-        #if battle.get("type") == "pathOfLegend":
-        match_data = {
-            "winner": "player" if battle["team"][0]["crowns"] > battle["opponent"][0]["crowns"] else "opponent",
-            "player_deck": [card["name"] for card in battle["team"][0]["cards"]],
-            "opponent_deck": [card["name"] for card in battle["opponent"][0]["cards"]],
-        }
-        matches.append(match_data)
+    player_queue = ["#C0V0UQ9UY"]
+
+    while(player_queue):
+        player = player_queue.pop()
+        battle_log = get_battle_log(player)
+        for battle in battle_log:
+            if battle.get('type') != "pathOfLegend":
+                continue
+
+            match_data = {
+                "winner": "player" if battle["team"][0]["crowns"] > battle["opponent"][0]["crowns"] else "opponent",
+                "player_deck": [card["name"] for card in battle["team"][0]["cards"]],
+                "opponent_deck": [card["name"] for card in battle["opponent"][0]["cards"]],
+            }
+
+            matches.append(match_data)
+            if(len(matches) >= limit):
+                return matches
+
+            opponent_tag = battle["opponent"][0].get("tag")
+            if(opponent_tag):
+                player_queue.append(opponent_tag)
     
     return matches
 
-player_tags = ["#C0V0UQ9UY"]
-
-all_matches = []
-for tag in player_tags:
-    battle_logs = get_battle_log(tag)
-    matches = extract_matches(battle_logs)
-    all_matches.extend(matches)
-
-all_matches = all_matches[:100]
+all_matches = extract_matches(1000)
 
 for i, match in enumerate(all_matches, start=1):
     print(f"Match {i}:")
