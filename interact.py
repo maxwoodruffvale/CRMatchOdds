@@ -18,7 +18,7 @@ def predict_team_odds(team1, team2):
 
     return odds_team1
 
-def get_recent_matches_odds(player_tag):
+def get_recent_matches(player_tag):
     sanitized_tag = player_tag.lstrip("#")
     url = f"{BASE_URL}/players/%23{sanitized_tag}/battlelog" 
 
@@ -33,21 +33,6 @@ def get_recent_matches_odds(player_tag):
 
     print(f"Error fetching battle log for {player_tag}: {response.status_code} {response.text}")
     return []
-
-team1 = [11, 22, 33, 44, 55, 66, 77, 88]  # Example players for Team 1
-team2 = [99, 88, 77, 66, 55, 44, 33, 22]  # Example players for Team 2
-
-#sort of a counter but 2.6 is goated
-d1 = ["Knight", "Magic Archer", "Goblin Drill", "The Log", "Tornado", "Ice Spirit", "Skeletons", "Cannon"]
-d2 = ["Musketeer", "Skeletons", "The Log", "Fireball", "Ice Spirit", "Cannon", "Hog Rirder", "Ice Golem"]
-
-#really good deck and really buns deck
-d1 = ["Goblin Barrel", "Royal Recruits", "Goblinstein", "Cannon Cart", "Goblin Gang", "Dart Goblin", "Arrows", "Cannon"]
-d2 = ["Elixir Collector", "Barbarian Hut", "Lightning", "Musketeer", "Zap", "Heal Spirit", "Goblin Machine", "Knight"]
-d1 = deck_to_nums(d1)
-d2 = deck_to_nums(d2)
-#predict_team_odds(d1, d2)
-player_id="#2QLYJYPJ"
 
 with requests.Session() as session:
     session.headers.update({"Authorization": f"Bearer {API_TOKEN}"})
@@ -73,4 +58,32 @@ with requests.Session() as session:
             print((player_deck[2*i].ljust(12) + "  " + player_deck[2*i + 1]).ljust(35) + "  -  " + opponent_deck[2*i].ljust(12) + "  " + opponent_deck[2*i + 1])
         # first winner is player, 0 = player win, 1 = opponent win
         #print(battle["team"][0]["cards"][0]) <-- HAS LINKS TO IMAGES FOR FUTURE REFERENCE
+
+        #crowns, opponent_name, player_name, odds, [player_deck_imgs], [opponent_deck_imgs], [player_deck], [opponent_deck]
         print("\n")
+
+
+
+
+
+
+
+
+
+"""
+team1 = [11, 22, 33, 44, 55, 66, 77, 88]  # Example players for Team 1
+team2 = [99, 88, 77, 66, 55, 44, 33, 22]  # Example players for Team 2
+
+#sort of a counter but 2.6 is goated
+d1 = ["Knight", "Magic Archer", "Goblin Drill", "The Log", "Tornado", "Ice Spirit", "Skeletons", "Cannon"]
+d2 = ["Musketeer", "Skeletons", "The Log", "Fireball", "Ice Spirit", "Cannon", "Hog Rirder", "Ice Golem"]
+
+#really good deck and really buns deck
+d1 = ["Goblin Barrel", "Royal Recruits", "Goblinstein", "Cannon Cart", "Goblin Gang", "Dart Goblin", "Arrows", "Cannon"]
+d2 = ["Elixir Collector", "Barbarian Hut", "Lightning", "Musketeer", "Zap", "Heal Spirit", "Goblin Machine", "Knight"]
+d1 = deck_to_nums(d1)
+d2 = deck_to_nums(d2)
+#predict_team_odds(d1, d2)
+player_id="#2QLYJYPJ"
+"""
+
