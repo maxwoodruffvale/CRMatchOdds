@@ -29,6 +29,10 @@ def card_to_num(card_name):
 def num_to_card(num):
     return card_names[num]
 
+def deck_to_nums(deck):
+    cards = [card_to_num(card) for card in deck]
+    cards.sort()
+    return cards
 
 def get_battle_log(session, player_tag):
     sanitized_tag = player_tag.lstrip("#")
@@ -70,34 +74,25 @@ def extract_matches(limit):
                 #print(battle["team"][0]["cards"][0]) <-- HAS LINKS TO IMAGES FOR FUTURE REFERENCE
 
                 matches.append(match_data)
+
+                if(len(matches) % 100 == 0): print(f'{len(matches):10}')
                 if(len(matches) >= limit):
                     return matches
 
                 player_queue.append(battle["opponent"][0].get("tag"))
     
+    output_file = "matches.csv"
+    with open(output_file, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        header = ['Winner'] + [f'P{i+1}' for i in range(8)] + [f'O{i+1}' for i in range(8)]
+        writer.writerow(header)
+
+        for match in matches:
+            player_deck = match['player_deck']
+            player_deck.sort()
+            opponent_deck = match['opponent_deck']
+            opponent_deck.sort()
+            row = [match['winner']] + player_deck + opponent_deck
+            writer.writerow(row)
+
     return matches
-
-all_matches = extract_matches(100)
-
-"""
-for i, match in enumerate(all_matches, start=1):
-    print(f"Match {i}:")
-    print(f"  Winner: {match['winner']}")
-    print(f"  Player Deck: {', '.join(match['player_deck'])}")
-    print(f"  Opponent Deck: {', '.join(match['opponent_deck'])}")
-    print()
-"""
-
-output_file = "matches.csv"
-with open(output_file, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.writer(file)
-    header = ['Winner'] + [f'P{i+1}' for i in range(8)] + [f'O{i+1}' for i in range(8)]
-    writer.writerow(header)
-
-    for match in all_matches:
-        player_deck = match['player_deck']
-        player_deck.sort()
-        opponent_deck = match['opponent_deck']
-        opponent_deck.sort()
-        row = [match['winner']] + player_deck + opponent_deck
-        writer.writerow(row)
