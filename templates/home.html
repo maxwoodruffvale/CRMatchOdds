@@ -92,17 +92,17 @@
     <a href="#">About</a>
 </div>
 
-<form id="inputs">
+<form id="inputs" action="/" method="POST">
     <div class="row align-items-center">
         <div class="col-2"></div>
         <div class="col-4">
-            <input type="text" class="form-control form-control-lg" placeholder="Enter tag e.g. C0V0UQ9UY">
+            <input type="text" class="form-control form-control-lg" name="tag" placeholder="Enter tag e.g. C0V0UQ9UY">
         </div>
         <div class="col-auto">
             <button type="submit" class="btn btn-primary btn-lg">Submit</button>
         </div>
         <div class="col-auto">
-            <input type="checkbox" class="form-check-input" id="exampleCheck1" checked>
+            <input type="checkbox" name="save" class="form-check-input" id="exampleCheck1" checked>
             <label class="form-check-label" for="exampleCheck1">Save my tag</label>
         </div>
         <div class="col-auto ms-auto d-none d-xl-block">
@@ -112,50 +112,44 @@
     </div>
 </form>
 
-<div class="box" style="border-color: #ccc">
+{%for match in match_data%}
+<div class="box" style="border-color: {{ match['winner_color'] }}">
     <div class="row align-items-start">
         <div class="col">
-            <p>vs John</p>
+            <p style="color: {{ match['winner_color'] }}"><strong>{{ "Victory" if match['winner'] == 0 else "Defeat" }}</strong></p>
         </div>
         <div class="col text-center">
-            <p>3-0</p>
+            <p>{{ match["crowns"][0] }} - {{ match["crowns"][1] }}</p>
         </div>
         <div class="col">
-            <p></p>
+            <p style="text-align:right">vs {{ match["opponent_name"] }}</p>
         </div>
     </div>
     
     <div class="progress-bar">
-        <div class="progress-bar-inner" style="width: 60%;"><!--put progress here-->
-            60%
+        <div class="progress-bar-inner" style="width: {{ match["odds"] * 100 }}%;"><!--put progress here-->
+            {{ (match["odds"] * 100)|floor }}%
         </div>
         <div class="progress-bar-text">
-            40%
+            {{ 100 - ((match["odds"] * 100)|floor) }} %
         </div>
     </div>
     <div class="grid-container">
         <div class="grid">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
+            {%for img in match["player_deck_imgs"]%}
+                <img src="{{img}}" alt="">
+            {%endfor%}
         </div>
         <div class="grid">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
-            <img src="https://static.wikia.nocookie.net/clashroyale/images/e/ee/GoblinBarrelCard.png/revision/latest?cb=20171212204745" alt="">
+            {%for img in match["opponent_deck_imgs"]%}
+                <img src="{{img}}" alt="">
+            {%endfor%}
         </div>
     </div>
 </div>
+
+{%endfor%}
+
 
 </body>
 </html>
