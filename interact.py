@@ -2,6 +2,7 @@ from joblib import load
 from gatherMatches import deck_to_nums, get_battle_log
 import requests
 import numpy as np
+
 model = load('randomForestMatchPredictor.joblib')
 
 with open('apikey.txt', 'r') as f:
@@ -34,56 +35,45 @@ def get_recent_matches(player_tag):
     print(f"Error fetching battle log for {player_tag}: {response.status_code} {response.text}")
     return []
 
-with requests.Session() as session:
-    session.headers.update({"Authorization": f"Bearer {API_TOKEN}"})
-    battle_log = get_battle_log(session, player_id)
-    for battle in battle_log:
-        winner = int(battle["team"][0]["crowns"] < battle["opponent"][0]["crowns"])
-        player_deck = [card["name"] for card in battle["team"][0]["cards"]]
-        opponent_deck =  [card["name"] for card in battle["opponent"][0]["cards"]]
+def get_recent_matches_and_odds(player_tag):
+    with requests.Session() as session:
+        session.headers.update({"Authorization": f"Bearer {API_TOKEN}"})
+        battle_log = get_battle_log(session, player_tag)
+        matches_data = []
+        for battle in battle_log:
+            winner = int(battle["team"][0]["crowns"] < battle["opponent"][0]["crowns"])
+            winner_color = "blue" if winner == 0 else "red"
+            crowns = [battle["team"][0]["crowns"], battle["opponent"][0]["crowns"]]
 
-        d1 = deck_to_nums(player_deck)
-        d2 = deck_to_nums(opponent_deck)
+            player_deck_names = [card["name"] for card in battle["team"][0]["cards"]]
+            opponent_deck_names =  [card["name"] for card in battle["opponent"][0]["cards"]]
+            player_deck_imgs = [card["iconUrls"]["medium"] for card in battle["team"][0]["cards"]]
+            opponent_deck_imgs = [card["iconUrls"]["medium"] for card in battle["opponent"][0]["cards"]]
 
-        odds = predict_team_odds(d1, d2)
+            d1 = deck_to_nums(player_deck_names)
+            d2 = deck_to_nums(opponent_deck_names)
 
-        opponent_name = battle["opponent"][0].get("name")
-        player_name = battle["team"][0].get("name")
-        print("Winner: " + ("player" if winner==0 else "opponent"))
-        print("Odds: " + str(odds))
-        st = "-"*int(odds*40)
-        st = st + ","*int((1-odds)*40)
-        print(st)
-        for i in range(4):
-            print((player_deck[2*i].ljust(12) + "  " + player_deck[2*i + 1]).ljust(35) + "  -  " + opponent_deck[2*i].ljust(12) + "  " + opponent_deck[2*i + 1])
-        # first winner is player, 0 = player win, 1 = opponent win
-        #print(battle["team"][0]["cards"][0]) <-- HAS LINKS TO IMAGES FOR FUTURE REFERENCE
+            odds = predict_team_odds(d1, d2)
 
-        #crowns, opponent_name, player_name, odds, [player_deck_imgs], [opponent_deck_imgs], [player_deck], [opponent_deck]
-        print("\n")
+            opponent_name = battle["opponent"][0].get("name")
+            player_name = battle["team"][0].get("name")
+            
+            battle_data = {
+                'winner':winner,
+                'winner_color':winner_color,
+                'crowns':crowns,
+                'player_deck_names':player_deck_names,
+                'opponent_deck_names':opponent_deck_names,
+                'player_deck_imgs':player_deck_imgs,
+                'opponent_deck_imgs':opponent_deck_imgs,
+                'odds':odds,
+                'opponent_name':opponent_name,
+                'player_name':player_name
+            }
+            matches_data.append(battle_data)
+            
+        return matches_data
 
-
-
-
-
-
-
-
-
-"""
-team1 = [11, 22, 33, 44, 55, 66, 77, 88]  # Example players for Team 1
-team2 = [99, 88, 77, 66, 55, 44, 33, 22]  # Example players for Team 2
-
-#sort of a counter but 2.6 is goated
-d1 = ["Knight", "Magic Archer", "Goblin Drill", "The Log", "Tornado", "Ice Spirit", "Skeletons", "Cannon"]
-d2 = ["Musketeer", "Skeletons", "The Log", "Fireball", "Ice Spirit", "Cannon", "Hog Rirder", "Ice Golem"]
-
-#really good deck and really buns deck
-d1 = ["Goblin Barrel", "Royal Recruits", "Goblinstein", "Cannon Cart", "Goblin Gang", "Dart Goblin", "Arrows", "Cannon"]
-d2 = ["Elixir Collector", "Barbarian Hut", "Lightning", "Musketeer", "Zap", "Heal Spirit", "Goblin Machine", "Knight"]
-d1 = deck_to_nums(d1)
-d2 = deck_to_nums(d2)
-#predict_team_odds(d1, d2)
-player_id="#2QLYJYPJ"
-"""
-
+#print(get_recent_matches_and_odds("#2QLYJYPJ"))
+import sys
+print(f"Python interpreter path: {sys.executable}")
