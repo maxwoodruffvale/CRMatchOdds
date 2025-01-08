@@ -1,5 +1,4 @@
 from gatherMatches import card_to_num, num_to_card, deck_to_nums
-
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier

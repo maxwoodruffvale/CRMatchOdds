@@ -2,11 +2,13 @@ from joblib import load
 from gatherMatches import deck_to_nums, get_battle_log
 import requests
 import numpy as np
+import os
 
 model = load('randomForestMatchPredictor.joblib')
 
-with open('apikey.txt', 'r') as f:
-    API_TOKEN = f.readline()
+API_TOKEN = os.getenv('API_KEY')
+#with open('apikey.txt', 'r') as f:
+#    API_TOKEN = f.readline()
 BASE_URL = "https://api.clashroyale.com/v1"
 
 def predict_team_odds(team1, team2):

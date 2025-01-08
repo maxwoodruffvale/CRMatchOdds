@@ -1,8 +1,10 @@
 import requests
 import csv
+import os
 
-with open('apikey.txt', 'r') as f:
-    API_TOKEN = f.readline()
+API_TOKEN = os.getenv('API_KEY')
+#with open('apikey.txt', 'r') as f:
+#    API_TOKEN = f.readline()
 BASE_URL = "https://api.clashroyale.com/v1"
 
 
