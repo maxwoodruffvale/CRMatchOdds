@@ -44,7 +44,7 @@ def about():
 
 @app.route("/custom-match", methods=["GET", "POST"])
 def custom_match():
-    return "Custom match otw"
+    return "Custom matches coming soon"
 
 @app.template_filter('floor')
 def floor_filter(value):
