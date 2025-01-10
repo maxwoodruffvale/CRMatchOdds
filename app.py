@@ -1,13 +1,11 @@
 import flask as fk
 from flask import render_template, redirect, url_for, session, request, make_response
-import logging
-from interact import get_recent_matches_and_odds
+from interactRF import get_recent_matches_and_odds
 import math
 
 import sys
 print(sys.executable)
 
-logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
 
 @app.route("/", methods=["POST", "GET"])
