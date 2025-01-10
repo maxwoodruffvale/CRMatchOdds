@@ -11,6 +11,11 @@ Program to predict the odds of you winning a clash royale game based on your dec
 ```bash
 pip install -r requirements.txt
 ```
+3. Get you API key from the [Clash Royale API](https://developer.clashroyale.com/#/)
+4. Set an environment variable API_KEY as your generated api key.
+```bash
+export API_KEY=your_api_key_here
+```
 
 ## Usage
 
@@ -29,4 +34,3 @@ d1 = deck_to_nums(d1)
 d2 = deck_to_nums(d2)
 print(predict_team_odds(d1, d2))
 ```
-
