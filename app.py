@@ -26,15 +26,7 @@ def index():
         response = make_response(render_template('home.html', match_data=matches))
         if(save=="on"):
             response.set_cookie('tag', tag)
-            print("save it")
-        
         return(response)
-        #return render_template("home.html", match_data = matches)
-
-        #        response = make_response(render_template_string(template, previous_input=user_input))
-        #         response.set_cookie('user_input', user_input)
-        #    previous_input = request.cookies.get('user_input')
-
 
 @app.route("/about", methods=["GET"])
 def about():
