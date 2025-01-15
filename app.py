@@ -14,10 +14,12 @@ def custom_match():
         with open("card_imgs.csv", "r") as file:
             card_imgs = file.readlines()
         card_imgs = [line.strip().split(',') for line in card_imgs]
-        return render_template("custommatch.html", card_imgs=card_imgs)
+        return render_template("custommatch.html", card_imgs=card_imgs, error="")
     else:
         player_cards=request.form.get('playerCards').split(',')
         opp_cards=request.form.get('enemyCards').split(',')
+        if(len(player_cards) != 8 or len(opp_cards) != 8):
+            return render_template("custommatch.html", error="Please enter 8 cards for both you and your opponent.")
 
         with open("card_imgs.csv", "r") as file:
             card_imgs = file.readlines()
@@ -70,4 +72,4 @@ def floor_filter(value):
     return math.floor(value)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=5100)
