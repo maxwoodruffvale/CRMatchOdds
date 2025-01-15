@@ -6,9 +6,9 @@ import os
 
 model = load('randomForestMatchPredictor.joblib')
 
-API_TOKEN = os.getenv('API_KEY')
-#with open('apikey.txt', 'r') as f:
-#    API_TOKEN = f.readline()
+#API_TOKEN = os.getenv('API_KEY')
+with open('apikey.txt', 'r') as f:
+    API_TOKEN = f.readline()
 BASE_URL = "https://api.clashroyale.com/v1"
 
 def predict_team_odds(team1, team2):
@@ -76,6 +76,41 @@ def get_recent_matches_and_odds(player_tag):
             
         return matches_data
 
-#print(get_recent_matches_and_odds("#2QLYJYPJ"))
-import sys
-print(f"Python interpreter path: {sys.executable}")
+def get_recent_matches_key(player_tag, key):
+    with requests.Session() as session:
+        session.headers.update({"Authorization": f"Bearer {key}"})
+        battle_log = get_battle_log(session, player_tag)
+        matches_data = []
+        for battle in battle_log:
+            winner = int(battle["team"][0]["crowns"] < battle["opponent"][0]["crowns"])
+            winner_color = "blue" if winner == 0 else "red"
+            crowns = [battle["team"][0]["crowns"], battle["opponent"][0]["crowns"]]
+
+            player_deck_names = [card["name"] for card in battle["team"][0]["cards"]]
+            opponent_deck_names =  [card["name"] for card in battle["opponent"][0]["cards"]]
+            player_deck_imgs = [card["iconUrls"]["medium"] for card in battle["team"][0]["cards"]]
+            opponent_deck_imgs = [card["iconUrls"]["medium"] for card in battle["opponent"][0]["cards"]]
+
+            d1 = deck_to_nums(player_deck_names)
+            d2 = deck_to_nums(opponent_deck_names)
+
+            odds = predict_team_odds(d1, d2)
+
+            opponent_name = battle["opponent"][0].get("name")
+            player_name = battle["team"][0].get("name")
+            
+            battle_data = {
+                'winner':winner,
+                'winner_color':winner_color,
+                'crowns':crowns,
+                'player_deck_names':player_deck_names,
+                'opponent_deck_names':opponent_deck_names,
+                'player_deck_imgs':player_deck_imgs,
+                'opponent_deck_imgs':opponent_deck_imgs,
+                'odds':odds,
+                'opponent_name':opponent_name,
+                'player_name':player_name
+            }
+            matches_data.append(battle_data)
+            
+        return matches_data

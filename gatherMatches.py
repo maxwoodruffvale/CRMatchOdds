@@ -2,9 +2,9 @@ import requests
 import csv
 import os
 
-API_TOKEN = os.getenv('API_KEY')
-#with open('apikey.txt', 'r') as f:
-#    API_TOKEN = f.readline()
+#API_TOKEN = os.getenv('API_KEY')
+with open('apikey.txt', 'r') as f:
+    API_TOKEN = f.readline()
 BASE_URL = "https://api.clashroyale.com/v1"
 
 
@@ -20,7 +20,10 @@ def get_all_cards():
         return {"error": f"Error {response.status_code}: {response.text}"}
 
 cards = get_all_cards()
-card_names = [card['name'] for card in cards]
+try :
+    card_names = [card['name'] for card in cards]
+except:
+    card_names = []
 
 def card_to_num(card_name):
     for i, name in enumerate(card_names):
